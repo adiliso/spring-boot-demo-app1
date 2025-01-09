@@ -5,11 +5,15 @@ import az.edu.turing.springbootdemoapp1.domain.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
+
+    private static final Set<UserEntity> users = new HashSet<>();
 
     @Override
     public UserEntity save(UserEntity userEntity) {
