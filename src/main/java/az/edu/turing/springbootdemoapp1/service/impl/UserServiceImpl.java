@@ -38,14 +38,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<UserDto> getAllUsers() {
+    public Collection<UserDto> getAll() {
         return userRepository.findAll().stream()
                 .map(userMapper::toUserDto)
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public UserDto updateUser(Long id, UserUpdateRequest request) {
+    public UserDto update(Long id, UserUpdateRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AlreadyExistsException("User already exists with username: " + request.getUsername());
         }
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto deleteUser(Long id) {
+    public UserDto delete(Long id) {
         UserEntity userEntity = userRepository.deleteById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(Long id) {
+    public UserDto getById(Long id) {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserByUsername(String username) {
+    public UserDto getByUsername(String username) {
         UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + username));
 

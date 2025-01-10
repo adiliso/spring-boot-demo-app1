@@ -10,13 +10,13 @@ public interface UserService {
 
     UserDto create(UserCreateRequest userCreateRequest);
 
-    Collection<UserDto> getAllUsers();
+    Collection<UserDto> getAll();
 
-    UserDto updateUser(Long id, UserUpdateRequest userUpdateRequest);
+    UserDto update(Long id, UserUpdateRequest userUpdateRequest);
 
-    UserDto deleteUser(Long id);
+    UserDto delete(Long id);
 
-    UserDto getUserById(Long id);
+    UserDto getById(Long id);
 
-    UserDto getUserByUsername(String username);
+    UserDto getByUsername(String username);
 }
