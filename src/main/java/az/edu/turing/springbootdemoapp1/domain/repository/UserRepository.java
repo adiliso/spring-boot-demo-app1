@@ -20,5 +20,5 @@ public interface UserRepository {
 
     Collection<UserEntity> findAll();
 
-    void deleteById(Long id);
+    Optional<UserEntity> deleteById(Long id);
 }
