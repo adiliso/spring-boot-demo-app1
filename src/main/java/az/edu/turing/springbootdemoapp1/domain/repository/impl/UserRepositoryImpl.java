@@ -52,7 +52,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Collection<UserEntity> findAll() {
-        return USERS;
+        return new HashSet<>(USERS);
     }
 
     @Override
