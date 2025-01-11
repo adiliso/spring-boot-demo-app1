@@ -2,8 +2,7 @@ package az.edu.turing.springbootdemoapp1.domain.repository.impl;
 
 import az.edu.turing.springbootdemoapp1.domain.entity.UserEntity;
 import az.edu.turing.springbootdemoapp1.domain.repository.UserRepository;
-import az.edu.turing.springbootdemoapp1.exception.NotFoundException;
-import org.apache.catalina.User;
+import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -22,14 +21,9 @@ public class UserRepositoryImpl implements UserRepository {
     public UserEntity save(UserEntity userEntity) {
         if (userEntity.getId() == null) {
             userEntity.setId(counter.incrementAndGet());
+
         } else {
-            Long id = userEntity.getId();
-            UserEntity userEntity1 = findById(id)
-                    .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-            userEntity1.setUsername(userEntity.getUsername());
-            userEntity1.setPassword(userEntity.getPassword());
-            userEntity = userEntity1;
-            deleteById(id);
+            USERS.remove(userEntity);
         }
         USERS.add(userEntity);
         return userEntity;
@@ -67,13 +61,18 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<UserEntity> deleteById(Long id) {
-        if (!existsById(id)) {
-            throw new NotFoundException("User not found with id: " + id);
-        }
+        return updateStatus(id, UserStatus.DELETED);
+    }
 
+    @Override
+    public Optional<UserEntity> updateStatus(Long id, UserStatus userStatus) {
         Optional<UserEntity> userEntity = findById(id);
-        USERS.removeIf(u -> u.getId().equals(id));
-
-        return userEntity;
+        if (userEntity.isPresent()) {
+            UserEntity userEntityToUpdate = userEntity.get();
+            userEntityToUpdate.setUserStatus(userStatus);
+            USERS.add(userEntityToUpdate);
+            return Optional.of(userEntityToUpdate);
+        }
+        return Optional.empty();
     }
 }

@@ -1,7 +1,7 @@
 package az.edu.turing.springbootdemoapp1.domain.repository;
 
 import az.edu.turing.springbootdemoapp1.domain.entity.UserEntity;
-import org.springframework.stereotype.Repository;
+import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -21,4 +21,6 @@ public interface UserRepository {
     Collection<UserEntity> findAll();
 
     Optional<UserEntity> deleteById(Long id);
+
+    Optional<UserEntity> updateStatus(Long id, UserStatus userStatus);
 }
