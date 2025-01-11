@@ -12,10 +12,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public final class GlobalErrorResponse {
+public class GlobalErrorResponse {
 
     private UUID requestId;
-    private String errorcode = "error_code";
-    private String errormessage = "error_message";
+    private String errorCode;
+    private String errorMessage;
     private LocalDateTime timestamp;
 }
