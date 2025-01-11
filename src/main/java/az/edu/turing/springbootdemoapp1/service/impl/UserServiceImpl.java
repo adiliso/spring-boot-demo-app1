@@ -9,6 +9,7 @@ import az.edu.turing.springbootdemoapp1.mapper.UserMapper;
 import az.edu.turing.springbootdemoapp1.model.dto.UserDto;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
+import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import az.edu.turing.springbootdemoapp1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,13 @@ public class UserServiceImpl implements UserService {
         }
         UserEntity updatedUserEntity = userRepository.save(userMapper.toUserEntity(id, request));
         return userMapper.toUserDto(updatedUserEntity);
+    }
+
+    @Override
+    public UserDto updateStatus(Long id, UserStatus userStatus) {
+        return userRepository.updateStatus(id, userStatus)
+                .map(userMapper::toUserDto)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 
     @Override

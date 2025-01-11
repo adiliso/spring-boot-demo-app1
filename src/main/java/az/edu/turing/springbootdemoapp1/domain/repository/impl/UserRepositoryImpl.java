@@ -61,13 +61,18 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<UserEntity> deleteById(Long id) {
+        return updateStatus(id, UserStatus.DELETED);
+    }
+
+    @Override
+    public Optional<UserEntity> updateStatus(Long id, UserStatus userStatus) {
         Optional<UserEntity> userEntity = findById(id);
         if (userEntity.isPresent()) {
-            UserEntity userEntityToDelete = userEntity.get();
-            userEntityToDelete.setUserStatus(UserStatus.DELETED);
-            USERS.add(userEntityToDelete);
-            return Optional.of(userEntityToDelete);
+            UserEntity userEntityToUpdate = userEntity.get();
+            userEntityToUpdate.setUserStatus(userStatus);
+            USERS.add(userEntityToUpdate);
+            return Optional.of(userEntityToUpdate);
         }
-        return userEntity;
+        return Optional.empty();
     }
 }

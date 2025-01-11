@@ -3,6 +3,7 @@ package az.edu.turing.springbootdemoapp1.controller;
 import az.edu.turing.springbootdemoapp1.model.dto.UserDto;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
+import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import az.edu.turing.springbootdemoapp1.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -51,9 +53,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<UserDto> update(@RequestParam Long id, @Valid @RequestBody UserUpdateRequest request) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<UserDto> update(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(userService.update(id, request));
+    }
+
+    @PatchMapping("/update-status/{id}")
+    public ResponseEntity<UserDto> updateStatus(@PathVariable Long id, @RequestParam UserStatus userStatus) {
+        return ResponseEntity.ok(userService.updateStatus(id, userStatus));
     }
 
     @DeleteMapping("/delete")
