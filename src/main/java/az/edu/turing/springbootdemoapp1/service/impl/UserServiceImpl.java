@@ -11,18 +11,25 @@ import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
 import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import az.edu.turing.springbootdemoapp1.service.UserService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    public UserServiceImpl(
+            @Qualifier("userJdbcRepoImpl") UserRepository userRepository,
+            UserMapper userMapper
+    ) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
 
     @Override
     public UserDto create(UserCreateRequest request) {

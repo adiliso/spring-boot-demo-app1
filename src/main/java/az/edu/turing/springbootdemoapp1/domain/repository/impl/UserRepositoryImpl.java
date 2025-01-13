@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
+@Repository("userRepositoryImpl")
 public class UserRepositoryImpl implements UserRepository {
 
     private static final Set<UserEntity> USERS = new HashSet<>();

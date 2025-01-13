@@ -4,45 +4,17 @@ import az.edu.turing.springbootdemoapp1.domain.entity.UserEntity;
 import az.edu.turing.springbootdemoapp1.model.dto.UserDto;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
-import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    public UserEntity toUserEntity(UserDto userDto) {
-        return UserEntity.builder()
-                .id(userDto.getId())
-                .username(userDto.getUsername())
-                .password(userDto.getPassword())
-                .userStatus(userDto.getUserStatus())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "userStatus", constant = "ACTIVE")
+    UserEntity toUserEntity(UserCreateRequest request);
 
-    public UserEntity toUserEntity(UserCreateRequest request) {
-        return UserEntity.builder()
-                .username(request.getUsername())
-                .password(request.getPassword())
-                .userStatus(UserStatus.ACTIVE)
-                .build();
-    }
+    UserEntity toUserEntity(Long id, UserUpdateRequest request);
 
-    public UserEntity toUserEntity(Long id, UserUpdateRequest request) {
-        return UserEntity.builder()
-                .id(id)
-                .username(request.getUsername())
-                .password(request.getPassword())
-                .userStatus(UserStatus.ACTIVE)
-                .build();
-    }
-
-    public UserDto toUserDto(UserEntity userEntity) {
-        return UserDto.builder()
-                .id(userEntity.getId())
-                .username(userEntity.getUsername())
-                .password(userEntity.getPassword())
-                .userStatus(userEntity.getUserStatus())
-                .build();
-    }
-
+    UserDto toUserDto(UserEntity entity);
 }
