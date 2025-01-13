@@ -54,11 +54,12 @@ public class UserJdbcRepoImpl implements UserRepository {
         String query = """
                 SELECT * FROM users WHERE username = :username;
                 """;
-        return Optional.ofNullable(namedParameterJdbcTemplate.query(
-                query,
-                Collections.singletonMap("username", username),
-                userRowMapper
-        ).getFirst());
+        return namedParameterJdbcTemplate.query(
+                        query,
+                        Collections.singletonMap("username", username),
+                        userRowMapper)
+                .stream()
+                .findFirst();
     }
 
     @Override
@@ -78,11 +79,12 @@ public class UserJdbcRepoImpl implements UserRepository {
         String query = """
                 SELECT * FROM users WHERE id = :id;
                 """;
-        return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(
-                query,
-                Collections.singletonMap("id", id),
-                userRowMapper
-        ));
+        return namedParameterJdbcTemplate.query(
+                        query,
+                        Collections.singletonMap("id", id),
+                        userRowMapper)
+                .stream()
+                .findFirst();
     }
 
     @Override
@@ -119,9 +121,11 @@ public class UserJdbcRepoImpl implements UserRepository {
         params.addValue("status", userStatus.toString());
         params.addValue("id", id);
 
-        return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(
-                query,
-                params,
-                userRowMapper));
+        return namedParameterJdbcTemplate.query(
+                        query,
+                        params,
+                        userRowMapper)
+                .stream()
+                .findFirst();
     }
 }
