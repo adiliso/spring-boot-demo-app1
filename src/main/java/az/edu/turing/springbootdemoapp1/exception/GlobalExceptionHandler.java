@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentConversionNotSupportedException;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -48,12 +46,14 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//
-//
-//    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-//
-//    @ExceptionHandler(MethodArgumentConversionNotSupportedException.class)
-//
-//    @ExceptionHandler(Method)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<GlobalErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).
+                body(GlobalErrorResponse.builder().
+                        errorCode(ErrorCode.METHOD_ARGUMENT_NOT_VALID).
+                        errorMessage(e.getMessage())
+                        .timestamp(LocalDateTime.now()).
+                        requestId(UUID.randomUUID()).
+                        build());
+    }
 }
