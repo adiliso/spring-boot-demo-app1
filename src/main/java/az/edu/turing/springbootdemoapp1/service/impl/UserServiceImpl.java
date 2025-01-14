@@ -11,12 +11,14 @@ import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
 import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import az.edu.turing.springbootdemoapp1.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -41,12 +43,13 @@ public class UserServiceImpl implements UserService {
         }
 
         UserEntity savedUserEntity = userRepository.save(userMapper.toUserEntity(request));
-
+        log.info("User created successfully with username: {}", request.getUsername());
         return userMapper.toUserDto(savedUserEntity);
     }
 
     @Override
     public Collection<UserDto> getAll() {
+        log.info("Getting all users...");
         return userRepository.findAll().stream()
                 .map(userMapper::toUserDto)
                 .collect(Collectors.toSet());
@@ -58,13 +61,17 @@ public class UserServiceImpl implements UserService {
             throw new AlreadyExistsException("User already exists with username: " + request.getUsername());
         }
         UserEntity updatedUserEntity = userRepository.save(userMapper.toUserEntity(id, request));
+        log.info("User updated successfully with id: {}", id);
         return userMapper.toUserDto(updatedUserEntity);
     }
 
     @Override
     public UserDto updateStatus(Long id, UserStatus userStatus) {
         return userRepository.updateStatus(id, userStatus)
-                .map(userMapper::toUserDto)
+                .map(user -> {
+                    log.info("Status updated successfully with id: {}", id);
+                    return userMapper.toUserDto(user);
+                })
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 
@@ -72,7 +79,7 @@ public class UserServiceImpl implements UserService {
     public UserDto delete(Long id) {
         UserEntity userEntity = userRepository.deleteById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-
+        log.info("User deleted successfully with id: {}", id);
         return userMapper.toUserDto(userEntity);
     }
 
@@ -80,15 +87,15 @@ public class UserServiceImpl implements UserService {
     public UserDto getById(Long id) {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-
+        log.info("User found successfully with id: {}", id);
         return userMapper.toUserDto(userEntity);
     }
 
     @Override
     public UserDto getByUsername(String username) {
         UserEntity userEntity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + username));
-
+                .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
+        log.info("User found successfully with username: {}", userEntity.getUsername());
         return userMapper.toUserDto(userEntity);
     }
 }
