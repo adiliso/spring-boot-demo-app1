@@ -2,22 +2,31 @@ package az.edu.turing.springbootdemoapp1.domain.repository.impl;
 
 import az.edu.turing.springbootdemoapp1.domain.entity.UserEntity;
 import az.edu.turing.springbootdemoapp1.domain.repository.UserRepository;
-import az.edu.turing.springbootdemoapp1.exception.NotFoundException;
+import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
+@Repository("userRepositoryImpl")
 public class UserRepositoryImpl implements UserRepository {
 
     private static final Set<UserEntity> USERS = new HashSet<>();
+    private static final AtomicLong counter = new AtomicLong();
 
     @Override
     public UserEntity save(UserEntity userEntity) {
-        return null;
+        if (userEntity.getId() == null) {
+            userEntity.setId(counter.incrementAndGet());
+
+        } else {
+            USERS.remove(userEntity);
+        }
+        USERS.add(userEntity);
+        return userEntity;
     }
 
     @Override
@@ -30,17 +39,19 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<UserEntity> findById(Long id) {
-        return Optional.empty();
+        return USERS.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst();
     }
 
     @Override
     public Collection<UserEntity> findAll() {
-        return USERS;
+        return new HashSet<>(USERS);
     }
 
     @Override
     public boolean existsByUsername(String username) {
-        return false;
+        return USERS.stream().anyMatch(u -> u.getUsername().equals(username));
     }
 
     @Override
@@ -49,7 +60,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Optional<UserEntity> deleteById(Long id) {
+        return updateStatus(id, UserStatus.DELETED);
+    }
 
+    @Override
+    public Optional<UserEntity> updateStatus(Long id, UserStatus userStatus) {
+        return findById(id)
+                .map(userEntity -> {
+                    userEntity.setUserStatus(userStatus);
+                    return save(userEntity);
+                });
     }
 }

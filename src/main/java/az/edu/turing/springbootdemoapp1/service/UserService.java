@@ -1,20 +1,25 @@
 package az.edu.turing.springbootdemoapp1.service;
 
 import az.edu.turing.springbootdemoapp1.model.dto.UserDto;
+import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
+import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
+import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 
 import java.util.Collection;
 
 public interface UserService {
 
-    UserDto create(UserDto userDto);
+    UserDto create(UserCreateRequest userCreateRequest);
 
-    Collection<UserDto> getAllUsers();
+    Collection<UserDto> getAll();
 
-    UserDto updateUser(Long id, UserDto userDto);
+    UserDto update(Long id, UserUpdateRequest userUpdateRequest);
 
-    UserDto deleteUser(Long id);
+    UserDto updateStatus(Long id, UserStatus userStatus);
 
-    UserDto getUserById(Long id);
+    UserDto delete(Long id);
 
-    UserDto getUserByUsername(String username);
+    UserDto getById(Long id);
+
+    UserDto getByUsername(String username);
 }

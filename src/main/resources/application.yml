@@ -1,0 +1,10 @@
+spring:
+  application:
+    name : spring-boot-demo-app1
+  datasource:
+    url: jdbc:postgresql://localhost:5434/postgres
+    username: postgres
+    password: 1234
+
+server:
+  port: 8080
