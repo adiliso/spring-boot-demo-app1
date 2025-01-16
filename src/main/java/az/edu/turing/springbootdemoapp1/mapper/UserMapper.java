@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "userStatus", constant = "ACTIVE")
     UserEntity toUserEntity(UserCreateRequest request);
 

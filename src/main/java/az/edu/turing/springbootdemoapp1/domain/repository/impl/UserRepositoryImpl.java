@@ -66,13 +66,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<UserEntity> updateStatus(Long id, UserStatus userStatus) {
-        Optional<UserEntity> userEntity = findById(id);
-        if (userEntity.isPresent()) {
-            UserEntity userEntityToUpdate = userEntity.get();
-            userEntityToUpdate.setUserStatus(userStatus);
-            USERS.add(userEntityToUpdate);
-            return Optional.of(userEntityToUpdate);
-        }
-        return Optional.empty();
+        return findById(id)
+                .map(userEntity -> {
+                    userEntity.setUserStatus(userStatus);
+                    return save(userEntity);
+                });
     }
 }

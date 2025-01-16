@@ -33,7 +33,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/get-all")
+    @GetMapping
     public ResponseEntity<Set<UserDto>> getAll() {
         return ResponseEntity.ok(new HashSet<>(userService.getAll()));
     }
@@ -43,28 +43,28 @@ public class UserController {
         return ResponseEntity.ok(userService.getById(id));
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/username/{username}")
     public ResponseEntity<UserDto> getByUsername(@Email @PathVariable String username) {
         return ResponseEntity.ok(userService.getByUsername(username));
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<UserDto> create(@Valid @RequestBody UserCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserDto> update(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(userService.update(id, request));
     }
 
-    @PatchMapping("/update-status/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<UserDto> updateStatus(@PathVariable Long id, @RequestParam UserStatus userStatus) {
         return ResponseEntity.ok(userService.updateStatus(id, userStatus));
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<UserDto> delete(@RequestParam Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserDto> delete(@PathVariable Long id) {
         return ResponseEntity.ok(userService.delete(id));
     }
 }

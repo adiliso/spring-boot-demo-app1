@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import static az.edu.turing.springbootdemoapp1.model.constant.UserColumnNames.*;
+
 
 @Repository("userJdbcRepoImpl")
 @RequiredArgsConstructor
@@ -25,24 +27,23 @@ public class UserJdbcRepoImpl implements UserRepository {
     public UserEntity save(UserEntity userEntity) {
         if (userEntity.getId() == null) {
             String query = """
-                    INSERT INTO users (username, password, status) VALUES (:username, :password, :status) RETURNING id;
+                    INSERT INTO users (username, password, status) VALUES (:username, :password, :status) RETURNING *;
                     """;
             MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("username", userEntity.getUsername());
-            params.addValue("password", userEntity.getPassword());
-            params.addValue("status", userEntity.getUserStatus().toString());
+            params.addValue(USERNAME, userEntity.getUsername());
+            params.addValue(PASSWORD, userEntity.getPassword());
+            params.addValue(STATUS, userEntity.getUserStatus().toString());
 
-            Long id = namedParameterJdbcTemplate.queryForObject(query, params, Long.class);
-            userEntity.setId(id);
+            return namedParameterJdbcTemplate.queryForObject(query, params, userRowMapper);
         } else {
             String query = """
                     UPDATE users SET username=:username, password=:password, status=:status where id=:id;
                     """;
             MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("id", userEntity.getId());
-            params.addValue("username", userEntity.getUsername());
-            params.addValue("password", userEntity.getPassword());
-            params.addValue("status", userEntity.getUserStatus().toString());
+            params.addValue(ID, userEntity.getId());
+            params.addValue(USERNAME, userEntity.getUsername());
+            params.addValue(PASSWORD, userEntity.getPassword());
+            params.addValue(STATUS, userEntity.getUserStatus().toString());
 
             namedParameterJdbcTemplate.update(query, params);
         }
@@ -56,7 +57,7 @@ public class UserJdbcRepoImpl implements UserRepository {
                 """;
         return namedParameterJdbcTemplate.query(
                         query,
-                        Collections.singletonMap("username", username),
+                        Collections.singletonMap(USERNAME, username),
                         userRowMapper)
                 .stream()
                 .findFirst();
@@ -81,7 +82,7 @@ public class UserJdbcRepoImpl implements UserRepository {
                 """;
         return namedParameterJdbcTemplate.query(
                         query,
-                        Collections.singletonMap("id", id),
+                        Collections.singletonMap(ID, id),
                         userRowMapper)
                 .stream()
                 .findFirst();
@@ -94,7 +95,7 @@ public class UserJdbcRepoImpl implements UserRepository {
                 """;
         return Boolean.TRUE.equals(namedParameterJdbcTemplate.queryForObject(
                 query,
-                Collections.singletonMap("id", id),
+                Collections.singletonMap(ID, id),
                 Boolean.class)
         );
     }
@@ -118,8 +119,8 @@ public class UserJdbcRepoImpl implements UserRepository {
                 UPDATE users SET status = :status WHERE id = :id RETURNING *;
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("status", userStatus.toString());
-        params.addValue("id", id);
+        params.addValue(STATUS, userStatus.toString());
+        params.addValue(ID, id);
 
         return namedParameterJdbcTemplate.query(
                         query,
