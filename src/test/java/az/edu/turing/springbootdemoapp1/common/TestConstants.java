@@ -1,5 +1,6 @@
 package az.edu.turing.springbootdemoapp1.common;
 
+import az.edu.turing.springbootdemoapp1.domain.entity.UserEntity;
 import az.edu.turing.springbootdemoapp1.model.dto.UserDto;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
@@ -10,6 +11,19 @@ public interface TestConstants {
     String USERNAME = "test@gmail.com";
     String PASSWORD = "Test@0101";
     UserStatus USER_STATUS = UserStatus.ACTIVE;
+
+    UserEntity USER_ENTITY = UserEntity.builder()
+            .id(ID)
+            .username(USERNAME)
+            .password(PASSWORD)
+            .userStatus(USER_STATUS)
+            .build();
+
+    UserEntity USER_CREATE_ENTITY = UserEntity.builder()
+            .username(USERNAME)
+            .password(PASSWORD)
+            .userStatus(USER_STATUS)
+            .build();
 
     UserDto USER_DTO = UserDto.builder()
             .id(ID)
