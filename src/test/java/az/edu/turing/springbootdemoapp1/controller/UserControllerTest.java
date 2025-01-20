@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.Set;
 
@@ -35,24 +34,22 @@ class UserControllerTest {
 
     @Test
     void getAll_Should_ReturnSuccess() throws Exception {
-        given(userService.getAll()).willReturn(Set.of(USER_DTO));
 
+        given(userService.getAll()).willReturn(Set.of(getUserDto()));
         mockMvc.perform(get("/api/v1/users"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(Set.of(USER_DTO))))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(content().json(objectMapper.writeValueAsString(Set.of(getUserDto()))));
 
         then(userService).should(times(1)).getAll();
     }
 
     @Test
     void getById_Should_ReturnSuccess() throws Exception {
-        given(userService.getById(ID)).willReturn(USER_DTO);
+        given(userService.getById(ID)).willReturn(getUserDto());
 
         mockMvc.perform(get("/api/v1/users/{id}", ID))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(USER_DTO)))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(content().json(objectMapper.writeValueAsString(getUserDto())));
 
         then(userService).should(times(1)).getById(ID);
     }
@@ -62,18 +59,16 @@ class UserControllerTest {
         given(userService.getById(ID)).willThrow(NotFoundException.class);
 
         mockMvc.perform(get("/api/v1/users/{id}", ID))
-                .andExpect(status().isNotFound())
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void getByUsername_Should_ReturnSuccess() throws Exception {
-        given(userService.getByUsername(USERNAME)).willReturn(USER_DTO);
+        given(userService.getByUsername(USERNAME)).willReturn(getUserDto());
 
         mockMvc.perform(get("/api/v1/users/username/{username}", USERNAME))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(USER_DTO)))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(content().json(objectMapper.writeValueAsString(getUserDto())));
 
         then(userService).should(times(1)).getByUsername(USERNAME);
     }
@@ -83,59 +78,54 @@ class UserControllerTest {
         given(userService.getByUsername(USERNAME)).willThrow(NotFoundException.class);
 
         mockMvc.perform(get("/api/v1/users/username/{username}", USERNAME))
-                .andExpect(status().isNotFound())
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void create_Should_ReturnSuccess() throws Exception {
-        given(userService.create(USER_CREATE_REQUEST)).willReturn(USER_DTO);
+        given(userService.create(getUserCreateRequest())).willReturn(getUserDto());
 
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(USER_CREATE_REQUEST)))
+                        .content(objectMapper.writeValueAsString(getUserCreateRequest())))
                 .andExpect(status().isCreated())
-                .andExpect(content().json(objectMapper.writeValueAsString(USER_DTO)))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(content().json(objectMapper.writeValueAsString(getUserDto())));
 
-        then(userService).should(times(1)).create(USER_CREATE_REQUEST);
+        then(userService).should(times(1)).create(getUserCreateRequest());
     }
 
     @Test
     void update_Should_ReturnSuccess() throws Exception {
-        given(userService.update(ID, USER_UPDATE_REQUEST)).willReturn(USER_DTO);
+        given(userService.update(ID, getUserUpdateRequest())).willReturn(getUserDto());
 
         mockMvc.perform(put("/api/v1/users/{id}", ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(USER_UPDATE_REQUEST)))
+                        .content(objectMapper.writeValueAsString(getUserUpdateRequest())))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(USER_DTO)))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(content().json(objectMapper.writeValueAsString(getUserDto())));
 
-        then(userService).should(times(1)).update(ID, USER_UPDATE_REQUEST);
+        then(userService).should(times(1)).update(ID, getUserUpdateRequest());
     }
 
     @Test
     void updateStatus_Should_ReturnSuccess() throws Exception {
-        given(userService.updateStatus(ID, USER_STATUS)).willReturn(USER_DTO);
+        given(userService.updateStatus(ID, USER_STATUS)).willReturn(getUserDto());
 
         mockMvc.perform(patch("/api/v1/users/{id}", ID)
                         .param("userStatus", USER_STATUS.toString()))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(USER_DTO)))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(content().json(objectMapper.writeValueAsString(getUserDto())));
 
         then(userService).should(times(1)).updateStatus(ID, USER_STATUS);
     }
 
     @Test
     void delete_Should_ReturnSuccess() throws Exception {
-        given(userService.delete(ID)).willReturn(USER_DTO);
+        given(userService.delete(ID)).willReturn(getUserDto());
 
         mockMvc.perform(delete("/api/v1/users/{id}", ID))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(USER_DTO)))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(content().json(objectMapper.writeValueAsString(getUserDto())));
 
         then(userService).should(times(1)).delete(ID);
     }

@@ -2,9 +2,11 @@ package az.edu.turing.springbootdemoapp1.service;
 
 import az.edu.turing.springbootdemoapp1.domain.repository.UserRepository;
 import az.edu.turing.springbootdemoapp1.exception.AlreadyExistsException;
+import az.edu.turing.springbootdemoapp1.exception.InvalidInputException;
 import az.edu.turing.springbootdemoapp1.exception.NotFoundException;
 import az.edu.turing.springbootdemoapp1.mapper.UserMapper;
 import az.edu.turing.springbootdemoapp1.model.dto.UserDto;
+import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
 import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import az.edu.turing.springbootdemoapp1.service.impl.UserServiceImpl;
@@ -39,23 +41,23 @@ class UserServiceTest {
 
     @Test
     void getAll_Should_Return_Success() {
-        given(userRepository.findAll()).willReturn(Set.of(USER_ENTITY));
+        given(userRepository.findAll()).willReturn(Set.of(getUserEntity()));
 
         Set<UserDto> users = userService.getAll();
         Assertions.assertNotNull(users);
         Assertions.assertFalse(users.isEmpty());
-        Assertions.assertEquals(Set.of(USER_DTO), users);
+        Assertions.assertEquals(Set.of(getUserDto()), users);
 
         then(userRepository).should(times(1)).findAll();
     }
 
     @Test
     void getByUsername_Should_Return_Success() {
-        given(userRepository.findByUsername(USERNAME)).willReturn(Optional.of(USER_ENTITY));
+        given(userRepository.findByUsername(USERNAME)).willReturn(Optional.of(getUserEntity()));
 
         UserDto userDto = userService.getByUsername(USERNAME);
         Assertions.assertNotNull(userDto);
-        assertEquals(USER_DTO, userDto);
+        assertEquals(getUserDto(), userDto);
 
         then(userRepository).should(times(1)).findByUsername(USERNAME);
     }
@@ -74,11 +76,11 @@ class UserServiceTest {
 
     @Test
     void getById_Should_Return_Success() {
-        given(userRepository.findById(ID)).willReturn(Optional.of(USER_ENTITY));
+        given(userRepository.findById(ID)).willReturn(Optional.of(getUserEntity()));
 
         UserDto userDto = userService.getById(ID);
         Assertions.assertNotNull(userDto);
-        assertEquals(USER_DTO, userDto);
+        assertEquals(getUserDto(), userDto);
 
         then(userRepository).should(times(1)).findById(ID);
     }
@@ -97,14 +99,17 @@ class UserServiceTest {
 
     @Test
     void create_Should_Return_Success() {
-        given(userRepository.save(USER_CREATE_ENTITY)).willReturn(USER_ENTITY);
+        var userEntity = getUserEntity();
+        userEntity.setId(null);
 
-        UserDto userDto = userService.create(USER_CREATE_REQUEST);
+        given(userRepository.save(userEntity)).willReturn(getUserEntity());
+
+        UserDto userDto = userService.create(getUserCreateRequest());
 
         Assertions.assertNotNull(userDto);
-        assertEquals(USER_DTO, userDto);
+        assertEquals(getUserDto(), userDto);
 
-        then(userRepository).should(times(1)).save(USER_CREATE_ENTITY);
+        then(userRepository).should(times(1)).save(userEntity);
     }
 
     @Test
@@ -112,7 +117,7 @@ class UserServiceTest {
         given(userRepository.existsByUsername(USERNAME)).willReturn(true);
 
         AlreadyExistsException ex = Assertions.assertThrows(AlreadyExistsException.class,
-                () -> userService.create(USER_CREATE_REQUEST));
+                () -> userService.create(getUserCreateRequest()));
 
         assertEquals("User already exists with username: " + USERNAME, ex.getMessage());
 
@@ -120,8 +125,19 @@ class UserServiceTest {
     }
 
     @Test
+    void create_Should_InvalidInputException_When_PasswordsDoNotMatch() {
+        UserCreateRequest userCreateRequest = getUserCreateRequest();
+        userCreateRequest.setPassword("wrong password");
+
+        InvalidInputException ex = Assertions.assertThrows(InvalidInputException.class,
+                () -> userService.create(userCreateRequest));
+
+        assertEquals("Passwords don't match", ex.getMessage());
+    }
+
+    @Test
     void update_Should_Return_Success() {
-        given(userRepository.save(USER_ENTITY)).willReturn(USER_ENTITY);
+        given(userRepository.save(getUserEntity())).willReturn(getUserEntity());
 
         UserDto userDto = userService.update(ID, UserUpdateRequest.builder()
                 .username(USERNAME)
@@ -129,9 +145,9 @@ class UserServiceTest {
                 .userStatus(UserStatus.ACTIVE)
                 .build());
         Assertions.assertNotNull(userDto);
-        assertEquals(USER_DTO, userDto);
+        assertEquals(getUserDto(), userDto);
 
-        then(userRepository).should(times(1)).save(USER_ENTITY);
+        then(userRepository).should(times(1)).save(getUserEntity());
     }
 
     @Test
@@ -140,7 +156,7 @@ class UserServiceTest {
 
         AlreadyExistsException ex = Assertions.
                 assertThrows(AlreadyExistsException.class,
-                        () -> userService.update(ID, USER_UPDATE_REQUEST));
+                        () -> userService.update(ID, getUserUpdateRequest()));
         assertEquals("User already exists with username: " + USERNAME, ex.getMessage());
 
         then(userRepository).should(times(1)).existsByUsername(USERNAME);
@@ -149,11 +165,11 @@ class UserServiceTest {
     @Test
     void updateStatus_Should_Return_Success() {
         given(userRepository.updateStatus(ID, UserStatus.ACTIVE)).
-                willReturn(Optional.of(USER_ENTITY));
+                willReturn(Optional.of(getUserEntity()));
 
         UserDto userDto = userService.updateStatus(ID, UserStatus.ACTIVE);
         Assertions.assertNotNull(userDto);
-        assertEquals(USER_DTO, userDto);
+        assertEquals(getUserDto(), userDto);
 
         then(userRepository).should(times(1))
                 .updateStatus(ID, UserStatus.ACTIVE);
@@ -175,11 +191,11 @@ class UserServiceTest {
 
     @Test
     void delete_Should_Return_Success() {
-        given(userRepository.deleteById(ID)).willReturn(Optional.of(USER_ENTITY));
+        given(userRepository.deleteById(ID)).willReturn(Optional.of(getUserEntity()));
 
         UserDto userDto = userService.delete(ID);
         Assertions.assertNotNull(userDto);
-        assertEquals(USER_DTO, userDto);
+        assertEquals(getUserDto(), userDto);
 
         then(userRepository).should(times(1)).deleteById(ID);
     }
