@@ -3,7 +3,6 @@ package az.edu.turing.springbootdemoapp1.domain.repository.impl;
 import az.edu.turing.springbootdemoapp1.domain.entity.UserEntity;
 import az.edu.turing.springbootdemoapp1.domain.repository.UserRepository;
 import az.edu.turing.springbootdemoapp1.mapper.UserRowMapper;
-import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -106,27 +105,5 @@ public class UserJdbcRepoImpl implements UserRepository {
                 SELECT * FROM users;
                 """;
         return namedParameterJdbcTemplate.query(query, userRowMapper);
-    }
-
-    @Override
-    public Optional<UserEntity> deleteById(Long id) {
-        return updateStatus(id, UserStatus.DELETED);
-    }
-
-    @Override
-    public Optional<UserEntity> updateStatus(Long id, UserStatus userStatus) {
-        String query = """
-                UPDATE users SET status = :status WHERE id = :id RETURNING *;
-                """;
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(STATUS, userStatus.toString());
-        params.addValue(ID, id);
-
-        return namedParameterJdbcTemplate.query(
-                        query,
-                        params,
-                        userRowMapper)
-                .stream()
-                .findFirst();
     }
 }
