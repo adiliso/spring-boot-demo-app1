@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateStatus(Long id, UserStatus userStatus) {
         UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with id: " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         userEntity.setUserStatus(userStatus);
         return userMapper.toUserDto(userRepository.save(userEntity));

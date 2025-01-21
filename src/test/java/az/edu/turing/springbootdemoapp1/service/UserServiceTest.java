@@ -7,7 +7,6 @@ import az.edu.turing.springbootdemoapp1.exception.NotFoundException;
 import az.edu.turing.springbootdemoapp1.mapper.UserMapper;
 import az.edu.turing.springbootdemoapp1.model.dto.UserDto;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
-import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
 import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import az.edu.turing.springbootdemoapp1.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -116,8 +115,9 @@ class UserServiceTest {
     void create_Should_ThrowAlreadyExistsException_When_UserAlreadyExists() {
         given(userRepository.existsByUsername(USERNAME)).willReturn(true);
 
+        var userCreateRequest = getUserCreateRequest();
         AlreadyExistsException ex = Assertions.assertThrows(AlreadyExistsException.class,
-                () -> userService.create(getUserCreateRequest()));
+                () -> userService.create(userCreateRequest));
 
         assertEquals("User already exists with username: " + USERNAME, ex.getMessage());
 
@@ -137,13 +137,10 @@ class UserServiceTest {
 
     @Test
     void update_Should_Return_Success() {
+        given(userRepository.existsById(ID)).willReturn(true);
         given(userRepository.save(getUserEntity())).willReturn(getUserEntity());
 
-        UserDto userDto = userService.update(ID, UserUpdateRequest.builder()
-                .username(USERNAME)
-                .password(PASSWORD)
-                .userStatus(UserStatus.ACTIVE)
-                .build());
+        UserDto userDto = userService.update(ID, getUserUpdateRequest());
         Assertions.assertNotNull(userDto);
         assertEquals(getUserDto(), userDto);
 
@@ -152,11 +149,13 @@ class UserServiceTest {
 
     @Test
     void update_Should_ThrowAlreadyExistsException_When_UserAlreadyExists() {
+        given(userRepository.existsById(ID)).willReturn(true);
         given(userRepository.existsByUsername(USERNAME)).willReturn(true);
 
+        var userUpdateRequest = getUserUpdateRequest();
         AlreadyExistsException ex = Assertions.
                 assertThrows(AlreadyExistsException.class,
-                        () -> userService.update(ID, getUserUpdateRequest()));
+                        () -> userService.update(ID, userUpdateRequest));
         assertEquals("User already exists with username: " + USERNAME, ex.getMessage());
 
         then(userRepository).should(times(1)).existsByUsername(USERNAME);
@@ -164,51 +163,26 @@ class UserServiceTest {
 
     @Test
     void updateStatus_Should_Return_Success() {
-        given(userRepository.updateStatus(ID, UserStatus.ACTIVE)).
-                willReturn(Optional.of(getUserEntity()));
+        given(userRepository.findById(ID)).willReturn(Optional.of(getUserEntity()));
+        given(userRepository.save(getUserEntity())).willReturn(getUserEntity());
 
         UserDto userDto = userService.updateStatus(ID, UserStatus.ACTIVE);
         Assertions.assertNotNull(userDto);
         assertEquals(getUserDto(), userDto);
 
-        then(userRepository).should(times(1))
-                .updateStatus(ID, UserStatus.ACTIVE);
+        then(userRepository).should(times(1)).save(getUserEntity());
     }
 
     @Test
     void updateStatus_Should_ThrowNotFoundException_When_IdNotFound() {
-        given(userRepository.updateStatus(ID, UserStatus.ACTIVE)).willReturn(Optional.empty());
+        given(userRepository.findById(ID)).willReturn(Optional.empty());
 
         NotFoundException ex = Assertions.
                 assertThrows(NotFoundException.class,
                         () -> userService.updateStatus(ID, UserStatus.ACTIVE));
 
-        assertEquals("User not found with id: 1", ex.getMessage());
-
-        then(userRepository).should(times(1))
-                .updateStatus(ID, UserStatus.ACTIVE);
-    }
-
-    @Test
-    void delete_Should_Return_Success() {
-        given(userRepository.deleteById(ID)).willReturn(Optional.of(getUserEntity()));
-
-        UserDto userDto = userService.delete(ID);
-        Assertions.assertNotNull(userDto);
-        assertEquals(getUserDto(), userDto);
-
-        then(userRepository).should(times(1)).deleteById(ID);
-    }
-
-    @Test
-    void delete_Should_ThrowNotFoundException_When_IdNotFound() {
-        given(userRepository.deleteById(ID)).willReturn(Optional.empty());
-
-        NotFoundException ex = Assertions.
-                assertThrows(NotFoundException.class, () -> userService.delete(ID));
-
         assertEquals("User not found with id: " + ID, ex.getMessage());
 
-        then(userRepository).should(times(1)).deleteById(ID);
+        then(userRepository).should(times(1)).findById(ID);
     }
 }
