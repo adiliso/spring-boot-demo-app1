@@ -57,6 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(Long id, UserUpdateRequest request) {
+        if (!userRepository.existsById(id)) throw new NotFoundException("User not found with id: " + id);
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AlreadyExistsException("User already exists with username: " + request.getUsername());
         }
@@ -67,20 +68,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateStatus(Long id, UserStatus userStatus) {
-        return userRepository.updateStatus(id, userStatus)
-                .map(user -> {
-                    log.info("Status updated successfully with id: {}", id);
-                    return userMapper.toUserDto(user);
-                })
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id: " + id + " not found"));
+
+        userEntity.setUserStatus(userStatus);
+        return userMapper.toUserDto(userRepository.save(userEntity));
     }
 
     @Override
     public UserDto delete(Long id) {
-        UserEntity userEntity = userRepository.deleteById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-        log.info("User deleted successfully with id: {}", id);
-        return userMapper.toUserDto(userEntity);
+        return updateStatus(id, UserStatus.DELETED);
     }
 
     @Override
