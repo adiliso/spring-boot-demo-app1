@@ -1,7 +1,12 @@
 package az.edu.turing.springbootdemoapp1.domain.entity;
 
 import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
 import lombok.*;
 
 @Data
