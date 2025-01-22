@@ -2,6 +2,8 @@ package az.edu.turing.springbootdemoapp1.domain.entity;
 
 import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -31,6 +33,7 @@ public class UserEntity {
     @ToString.Exclude
     private String password;
 
-    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private UserStatus userStatus;
 }
