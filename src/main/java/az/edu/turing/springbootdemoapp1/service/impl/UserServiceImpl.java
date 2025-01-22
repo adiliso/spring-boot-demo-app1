@@ -1,7 +1,7 @@
 package az.edu.turing.springbootdemoapp1.service.impl;
 
 import az.edu.turing.springbootdemoapp1.domain.entity.UserEntity;
-import az.edu.turing.springbootdemoapp1.domain.repository.UserRepository;
+import az.edu.turing.springbootdemoapp1.domain.repository.PostgresUserRepository;
 import az.edu.turing.springbootdemoapp1.exception.AlreadyExistsException;
 import az.edu.turing.springbootdemoapp1.exception.InvalidInputException;
 import az.edu.turing.springbootdemoapp1.exception.NotFoundException;
@@ -11,8 +11,8 @@ import az.edu.turing.springbootdemoapp1.model.dto.requests.UserCreateRequest;
 import az.edu.turing.springbootdemoapp1.model.dto.requests.UserUpdateRequest;
 import az.edu.turing.springbootdemoapp1.model.enums.UserStatus;
 import az.edu.turing.springbootdemoapp1.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -20,18 +20,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final PostgresUserRepository userRepository;
     private final UserMapper userMapper;
-
-    public UserServiceImpl(
-            @Qualifier("userJdbcRepoImpl") UserRepository userRepository,
-            UserMapper userMapper
-    ) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
 
     @Override
     public UserDto create(UserCreateRequest request) {
