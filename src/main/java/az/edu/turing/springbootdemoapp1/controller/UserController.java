@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @Validated
 @RequiredArgsConstructor
 public class UserController {

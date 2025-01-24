@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<UserDto> getAll() {
+    public Set<UserDto> getAll() {
         log.info("Getting all users...");
         return userRepository.findAll().stream()
                 .map(userMapper::toUserDto)
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateStatus(Long id, UserStatus userStatus) {
         UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with id: " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         userEntity.setUserStatus(userStatus);
         return userMapper.toUserDto(userRepository.save(userEntity));
