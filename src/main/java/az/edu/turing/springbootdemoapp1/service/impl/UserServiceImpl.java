@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<UserDto> getAll() {
+    public Set<UserDto> getAll() {
         log.info("Getting all users...");
         return userRepository.findAll().stream()
                 .map(userMapper::toUserDto)
@@ -57,6 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(Long id, UserUpdateRequest request) {
+        if (!userRepository.existsById(id)) throw new NotFoundException("User not found with id: " + id);
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AlreadyExistsException("User already exists with username: " + request.getUsername());
         }
@@ -67,20 +68,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateStatus(Long id, UserStatus userStatus) {
-        return userRepository.updateStatus(id, userStatus)
-                .map(user -> {
-                    log.info("Status updated successfully with id: {}", id);
-                    return userMapper.toUserDto(user);
-                })
+        UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+
+        userEntity.setUserStatus(userStatus);
+        return userMapper.toUserDto(userRepository.save(userEntity));
     }
 
     @Override
     public UserDto delete(Long id) {
-        UserEntity userEntity = userRepository.deleteById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-        log.info("User deleted successfully with id: {}", id);
-        return userMapper.toUserDto(userEntity);
+        return updateStatus(id, UserStatus.DELETED);
     }
 
     @Override

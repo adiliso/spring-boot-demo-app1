@@ -58,18 +58,4 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean existsById(Long id) {
         return USERS.stream().anyMatch(u -> u.getId().equals(id));
     }
-
-    @Override
-    public Optional<UserEntity> deleteById(Long id) {
-        return updateStatus(id, UserStatus.DELETED);
-    }
-
-    @Override
-    public Optional<UserEntity> updateStatus(Long id, UserStatus userStatus) {
-        return findById(id)
-                .map(userEntity -> {
-                    userEntity.setUserStatus(userStatus);
-                    return save(userEntity);
-                });
-    }
 }
