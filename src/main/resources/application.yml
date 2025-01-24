@@ -1,13 +1,15 @@
 spring:
   application:
     name : spring-boot-demo-app1
+  liquibase:
+    change-log: classpath:liquibase/changelog-master.yml
   datasource:
     url: jdbc:postgresql://localhost:5434/postgres
     username: postgres
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true

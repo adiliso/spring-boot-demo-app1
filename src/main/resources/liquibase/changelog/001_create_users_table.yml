@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001_create_users_table
+      author: Adil Ismayilov
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigSerial
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+            remarks: This is users table to store users' info.
