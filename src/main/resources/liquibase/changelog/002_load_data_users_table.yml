@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002_load_data_users_table
+      author: Adil Ismayilov
+      changes:
+        - loadData:
+            encoding: UTF-8
+            file: liquibase/data/users.csv
+            separator: ;
+            tableName: users
+
